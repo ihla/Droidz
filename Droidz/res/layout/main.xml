@@ -4,6 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     tools:context=".DroidzActivity" >
+<!--     tools:context=".DroidzActivity" no need to associate with this activity since different layout used in runtime -->    
 
     <TextView
         android:layout_width="fill_parent"
