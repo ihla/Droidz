@@ -1,6 +1,7 @@
 package co.joyatwork.droidz;
 
 import co.joyatwork.droidz.model.Droid;
+import co.joyatwork.droidz.model.components.Speed;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -109,8 +110,32 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 		return true;		
 	}
 
-	@Override
-	protected void onDraw(Canvas canvas) {
+	public void update() {
+		// check collision with right wall if heading right
+		if (droid.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
+				&& droid.getX() + droid.getBitmap().getWidth() / 2 >= getWidth()) {
+			droid.getSpeed().toggleXDirection();
+		}
+		// check collision with left wall if heading left
+		if (droid.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
+				&& droid.getX() - droid.getBitmap().getWidth() / 2 <= 0) {
+			droid.getSpeed().toggleXDirection();
+		}
+		// check collision with bottom wall if heading down
+		if (droid.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
+				&& droid.getY() + droid.getBitmap().getHeight() / 2 >= getHeight()) {
+			droid.getSpeed().toggleYDirection();
+		}
+		// check collision with top wall if heading up
+		if (droid.getSpeed().getyDirection() == Speed.DIRECTION_UP
+				&& droid.getY() - droid.getBitmap().getHeight() / 2 <= 0) {
+			droid.getSpeed().toggleYDirection();
+		}
+		// Update the lone droid
+		droid.update();
+	}
+
+	public void render(Canvas canvas) {
 		// fills the canvas with black
 		canvas.drawColor(Color.BLACK);
 		droid.draw(canvas);

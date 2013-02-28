@@ -1,5 +1,6 @@
 package co.joyatwork.droidz.model;
 
+import co.joyatwork.droidz.model.components.Speed;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.Log;
@@ -7,18 +8,31 @@ import android.util.Log;
 public class Droid {
 	private static final String TAG = Droid.class.getSimpleName();
 	private Bitmap bitmap; // the actual bitmap
+	private Speed speed; //the speed of movement
 	private int x; // the X coordinate
 	private int y; // the Y coordinate
 	private boolean touched; // if droid is touched/picked up
 
 	public Droid(Bitmap bitmap, int x, int y) {
 		this.bitmap = bitmap;
+		this.speed = new Speed();
 		this.x = x;
 		this.y = y;
 	}
 
+	public void update() {
+		if (!touched) {
+			x += (speed.getXv() * speed.getxDirection());
+			y += (speed.getYv() * speed.getyDirection());
+		}
+	}
+
 	public Bitmap getBitmap() {
 		return bitmap;
+	}
+	
+	public Speed getSpeed() {
+		return speed;
 	}
 
 	public void setBitmap(Bitmap bitmap) {

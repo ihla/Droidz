@@ -36,9 +36,10 @@ public class MainThread extends Thread {
 				canvas = this.surfaceHolder.lockCanvas();
 				synchronized (surfaceHolder) {
 					// update game state
+					this.gamePanel.update();
+					// render state to the screen
 					// draws the canvas on the panel
-					//TODO suspicious method call 'onDraw()' Lint suppressed in this file
-					this.gamePanel.onDraw(canvas);
+					this.gamePanel.render(canvas);
 				}
 			} finally {
 				// in case of an exception the surface is not left in
