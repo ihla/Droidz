@@ -25,7 +25,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 		
 		
 		// create droid and load bitmap
-		droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
+		//droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
+		droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), 50, 50);
 
 		// create the game loop thread
 		thread = new MainThread(getHolder(), this);
@@ -37,7 +38,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "surfaceChanged");
 		
 	}
 
@@ -57,6 +58,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	 */
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
+		thread.setRunning(false); //TODO calling method on other thread?
 		boolean retry = true;
 		Log.d(TAG, "surfaceDestroyed");
 		// tell the thread to shut down and wait for it to finish
@@ -69,7 +71,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			}
 			catch(InterruptedException e) {
 				//try again shutting down the thread
-				Log.d(TAG, ".");
+				Log.d(TAG, "#");
 			}
 		}
 		Log.d(TAG, "Thread was shut down cleanly");	
@@ -84,7 +86,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			//check if the gesture happened in lower part of screen (50 pixels? - depends on actual screen size!)
 			//TODO remove magic number 50  Do not use hard-coded pixel values in your application code
 			if (event.getY() > getHeight() - 50) {
-				thread.setRunning(false);
+				thread.setRunning(false); //TODO calling method on other thread?
 				((Activity) getContext()).finish();
 			} else {
 				/* Note: The screen is a rectangle with the upper left coordinates at (0,0) 
@@ -136,6 +138,9 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	}
 
 	public void render(Canvas canvas) {
+		//if display orientation changed, canvas is null 'cause surface destroyed!
+		if (canvas == null)
+			return;
 		// fills the canvas with black
 		canvas.drawColor(Color.BLACK);
 		droid.draw(canvas);
