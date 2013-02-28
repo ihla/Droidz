@@ -1,8 +1,11 @@
 package co.joyatwork.droidz;
 
+import co.joyatwork.droidz.model.Droid;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -12,12 +15,17 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
 	private static final String TAG = MainGamePanel.class.getSimpleName();
 	private MainThread thread;
+	private Droid droid;
 
 	public MainGamePanel(Context context) {
 		super(context);
 		// adding the callback (this) to the surface holder to intercept events
 		getHolder().addCallback(this);
 		
+		
+		// create droid and load bitmap
+		droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
+
 		// create the game loop thread
 		thread = new MainThread(getHolder(), this);
 		
@@ -50,7 +58,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		boolean retry = true;
 		Log.d(TAG, "surfaceDestroyed");
-		
+		// tell the thread to shut down and wait for it to finish
+		// this is a clean shutdown		
 		while (retry) {
 			try {
 				thread.join();
@@ -62,15 +71,18 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 				Log.d(TAG, ".");
 			}
 		}
-		
+		Log.d(TAG, "Thread was shut down cleanly");	
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			// delegating event handling to the droid
+			droid.handleActionDown((int) event.getX(), (int) event.getY());
+
 			//check if the gesture happened in lower part of screen (50 pixels? - depends on actual screen size!)
-			//TODO remove magic number 50
- 			if (event.getY() > getHeight() - 50) {
+			//TODO remove magic number 50  Do not use hard-coded pixel values in your application code
+			if (event.getY() > getHeight() - 50) {
 				thread.setRunning(false);
 				((Activity) getContext()).finish();
 			} else {
@@ -80,13 +92,28 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 				Log.d(TAG, "Coords: x=" + event.getX() + ",y=" + event.getY());
 			}
 		}
-		return super.onTouchEvent(event);
+		if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			// the gestures
+			if (droid.isTouched()) {
+				// the droid was picked up and is being dragged
+				droid.setX((int) event.getX());
+				droid.setY((int) event.getY());
+			}
+		}
+		if (event.getAction() == MotionEvent.ACTION_UP) {
+			// touch was released
+			if (droid.isTouched()) {
+				droid.setTouched(false);
+			}
+		}
+		return true;		
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		// TODO Auto-generated method stub
-		super.onDraw(canvas);
+		// fills the canvas with black
+		canvas.drawColor(Color.BLACK);
+		droid.draw(canvas);
 	}
 
 }

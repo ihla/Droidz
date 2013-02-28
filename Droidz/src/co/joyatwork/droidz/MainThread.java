@@ -1,5 +1,6 @@
 package co.joyatwork.droidz;
 
+import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -25,11 +26,27 @@ public class MainThread extends Thread {
 	@Override
 	public void run() {
 		long tickCount = 0L;
+		Canvas canvas;
 		Log.d(TAG, "Starting game loop");
-		while(running) {
+		while (running) {
+			canvas = null;
 			tickCount++;
-			//TODO update game state
-			//TODO render state to screen
+			// try locking the canvas for exclusive pixel editing on the surface
+			try {
+				canvas = this.surfaceHolder.lockCanvas();
+				synchronized (surfaceHolder) {
+					// update game state
+					// draws the canvas on the panel
+					//TODO suspicious method call 'onDraw()' Lint suppressed in this file
+					this.gamePanel.onDraw(canvas);
+				}
+			} finally {
+				// in case of an exception the surface is not left in
+				// an inconsistent state
+				if (canvas != null) {
+					surfaceHolder.unlockCanvasAndPost(canvas);
+				}
+			} // end finally
 		}
 		Log.d(TAG, "Game loop executed " + tickCount + " times");
 	}
