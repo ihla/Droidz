@@ -1,6 +1,7 @@
 package co.joyatwork.droidz.model;
 
 import co.joyatwork.droidz.model.components.Speed;
+//TODO model class should not depend on android packages
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.Log;
@@ -18,6 +19,7 @@ public class Droid {
 		this.speed = new Speed(2,2); //TODO speed configuration
 		this.x = x;
 		this.y = y;
+		//TODO touched not initialized explicitly
 	}
 
 	public void update() {
