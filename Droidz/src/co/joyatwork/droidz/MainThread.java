@@ -12,6 +12,7 @@ public class MainThread extends Thread {
 
 	/* desired fps
 	 * achieved fps will be possible lower due to multi-threading overhead
+	 * achieved fps depends also on rendering time which increases with picture size!
 	 */
 	private final static int MAX_FPS = 50;
 	// maximum number of frames to be skipped
@@ -114,7 +115,7 @@ public class MainThread extends Thread {
 	}
 
 	private void initTimingElements() {
-		// initialise timing elements
+		// Initialize timing elements
 		fpsStore = new double[FPS_HISTORY_NR];
 		for (int i = 0; i < FPS_HISTORY_NR; i++) {
 			fpsStore[i] = 0.0;
@@ -136,7 +137,7 @@ public class MainThread extends Thread {
 		Canvas canvas;
 		Log.d(TAG, "Starting game loop");
 
-		// initialise timing elements for stat gathering
+		// Initialize timing elements for stat gathering
 		// TODO factor out to helper class
 		initTimingElements();
 
@@ -151,7 +152,8 @@ public class MainThread extends Thread {
 			canvas = null;
 			// try locking the canvas for exclusive pixel editing
 			// in the surface
-			try {
+			try { //TODO why is this try block here? lockCanvas() doesn't throw exception but returns null if not locked!
+				//>>> start measuring of frame duration
 				beginTime = System.currentTimeMillis();
 				framesSkipped = 0; // resetting the frames skipped
 				// update game state
@@ -166,6 +168,7 @@ public class MainThread extends Thread {
 				}
 				// calculate how long did the cycle take
 				timeDiff = System.currentTimeMillis() - beginTime;
+				//<<< stop measuring of frame duration
 				// calculate sleep time
 				sleepTime = (int) (FRAME_PERIOD - timeDiff);
 
@@ -180,8 +183,8 @@ public class MainThread extends Thread {
 				}
 
 				/*
-				 * if game is behind the FPS we update the game only and skip
-				 * rendering we call update() as many times as many frames we
+				 * if game is behind, we update the game only and skip
+				 * rendering, we call update() as many times as many frames we
 				 * need to skip
 				 */
 				while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
