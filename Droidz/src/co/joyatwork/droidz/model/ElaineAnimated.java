@@ -26,12 +26,10 @@ public class ElaineAnimated {
 	 * @param bitmap is image containing all frames in one bitmap
 	 * @param x coordinate of Elaine's placement on the display surface
 	 * @param y coordinate of Elaine's placement on the display surface
-	 * @param width of one frame
-	 * @param height of one frame
 	 * @param fps is sprite frames per second
 	 * @param frameCount is count of frames in the bitmap image
 	 */
-	public ElaineAnimated(Bitmap bitmap, int x, int y, int width, int height, int fps, int frameCount) {
+	public ElaineAnimated(Bitmap bitmap, int x, int y, int fps, int frameCount) {
 		this.bitmap = bitmap;
 		this.x = x;
 		this.y = y;

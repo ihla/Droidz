@@ -43,7 +43,6 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			elaine = new ElaineAnimated(
 					BitmapFactory.decodeResource(getResources(), R.drawable.walk_elaine)
 					, 50, 50	// initial position
-					, 30, 47	// width and height of sprite
 					, 5, 5);	// FPS and number of frames in the animation
 		}
 
