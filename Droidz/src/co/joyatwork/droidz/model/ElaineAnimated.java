@@ -20,6 +20,16 @@ public class ElaineAnimated {
 	private int x;				// the X coordinate of the object (top left of the image)
 	private int y;				// the Y coordinate of the object (top left of the image)
 
+	/**
+	 * Simple animation of walking Elaine (aka sprite)
+	 * @param bitmap is image containing all frames in one bitmap
+	 * @param x coordinate of Elaine's placement on the display surface
+	 * @param y coordinate of Elaine's placement on the display surface
+	 * @param width of one frame
+	 * @param height of one frame
+	 * @param fps is sprite frames per second
+	 * @param frameCount is count of frames in the bitmap image
+	 */
 	public ElaineAnimated(Bitmap bitmap, int x, int y, int width, int height, int fps, int frameCount) {
 		this.bitmap = bitmap;
 		this.x = x;
@@ -33,6 +43,10 @@ public class ElaineAnimated {
 		frameTicker = 0L;
 	}
 	
+	/**
+	 * called periodically from main loop
+	 * @param gameTime is used to calculate sprite frame tick to increment pointer to the frame to be displayed
+	 */
 	public void update(long gameTime) {
 		if (gameTime > frameTicker + framePeriod) {
 			frameTicker = gameTime;
@@ -47,6 +61,10 @@ public class ElaineAnimated {
 		this.sourceRect.right = this.sourceRect.left + spriteWidth;
 	}
 	
+	/**
+	 * draws current sprite frame in rectangle on given coordinates
+	 * @param canvas
+	 */
 	public void draw(Canvas canvas) {
 		// where to draw the sprite
 		Rect destRect = new Rect(getX(), getY(), getX() + spriteWidth, getY() + spriteHeight);
