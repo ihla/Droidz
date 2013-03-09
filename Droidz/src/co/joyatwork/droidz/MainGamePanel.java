@@ -1,6 +1,7 @@
 package co.joyatwork.droidz;
 
 import co.joyatwork.droidz.model.Droid;
+import co.joyatwork.droidz.model.ElaineAnimated;
 import co.joyatwork.droidz.model.components.Speed;
 import android.app.Activity;
 import android.content.Context;
@@ -16,8 +17,10 @@ import android.view.SurfaceView;
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 	private static final String TAG = MainGamePanel.class.getSimpleName();
+	private static final boolean RUN_DROID = false; //switch between Droid and ElaineAnimated
 	private MainThread thread;
 	private Droid droid;
+	private ElaineAnimated elaine;
 	
 	// the fps to be displayed
 	private String avgFps;
@@ -30,10 +33,19 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 		// adding the callback (this) to the surface holder to intercept events
 		getHolder().addCallback(this);
 		
-		
-		// create droid and load bitmap
-		//droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
-		droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), 50, 50);
+		if (RUN_DROID) {
+			// create droid and load bitmap
+			//droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
+			droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), 50, 50);
+		}
+		else {
+			// create Elaine and load bitmap
+			elaine = new ElaineAnimated(
+					BitmapFactory.decodeResource(getResources(), R.drawable.walk_elaine)
+					, 50, 50	// initial position
+					, 30, 47	// width and height of sprite
+					, 5, 5);	// FPS and number of frames in the animation
+		}
 
 		// create the game loop thread
 		thread = new MainThread(getHolder(), this);
@@ -86,6 +98,9 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		if (!RUN_DROID)
+			return false;
+		
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			// delegating event handling to the droid
 			droid.handleActionDown((int) event.getX(), (int) event.getY());
@@ -120,28 +135,33 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	}
 
 	public void update() {
-		// check collision with right wall if heading right
-		if (droid.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
-				&& droid.getX() + droid.getBitmap().getWidth() / 2 >= getWidth()) {
-			droid.getSpeed().toggleXDirection();
+		if (RUN_DROID) {
+			// check collision with right wall if heading right
+			if (droid.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
+					&& droid.getX() + droid.getBitmap().getWidth() / 2 >= getWidth()) {
+				droid.getSpeed().toggleXDirection();
+			}
+			// check collision with left wall if heading left
+			if (droid.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
+					&& droid.getX() - droid.getBitmap().getWidth() / 2 <= 0) {
+				droid.getSpeed().toggleXDirection();
+			}
+			// check collision with bottom wall if heading down
+			if (droid.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
+					&& droid.getY() + droid.getBitmap().getHeight() / 2 >= getHeight()) {
+				droid.getSpeed().toggleYDirection();
+			}
+			// check collision with top wall if heading up
+			if (droid.getSpeed().getyDirection() == Speed.DIRECTION_UP
+					&& droid.getY() - droid.getBitmap().getHeight() / 2 <= 0) {
+				droid.getSpeed().toggleYDirection();
+			}
+			// Update the lone droid
+			droid.update();
 		}
-		// check collision with left wall if heading left
-		if (droid.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
-				&& droid.getX() - droid.getBitmap().getWidth() / 2 <= 0) {
-			droid.getSpeed().toggleXDirection();
+		else {
+			elaine.update(System.currentTimeMillis());
 		}
-		// check collision with bottom wall if heading down
-		if (droid.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
-				&& droid.getY() + droid.getBitmap().getHeight() / 2 >= getHeight()) {
-			droid.getSpeed().toggleYDirection();
-		}
-		// check collision with top wall if heading up
-		if (droid.getSpeed().getyDirection() == Speed.DIRECTION_UP
-				&& droid.getY() - droid.getBitmap().getHeight() / 2 <= 0) {
-			droid.getSpeed().toggleYDirection();
-		}
-		// Update the lone droid
-		droid.update();
 	}
 
 	public void render(Canvas canvas) {
@@ -150,7 +170,12 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			return;
 		// fills the canvas with black
 		canvas.drawColor(Color.BLACK);
-		droid.draw(canvas);
+		if (RUN_DROID) {
+			droid.draw(canvas);
+		}
+		else {
+			elaine.draw(canvas);
+		}
 		// display fps
 		displayFps(canvas, avgFps);
 	}
