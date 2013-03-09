@@ -2,6 +2,7 @@ package co.joyatwork.droidz.model;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class ElaineAnimated {
@@ -66,9 +67,21 @@ public class ElaineAnimated {
 	 * @param canvas
 	 */
 	public void draw(Canvas canvas) {
+		final float imageX = 50;
+		final float imageY = 150;
 		// where to draw the sprite
 		Rect destRect = new Rect(getX(), getY(), getX() + spriteWidth, getY() + spriteHeight);
 		canvas.drawBitmap(bitmap, sourceRect, destRect, null);
+		
+		//display all frames and highlight the current frame
+		canvas.drawBitmap(bitmap,  imageX, imageY, null);
+		Paint paint = new Paint();
+		paint.setARGB(50, 0, 255, 0);// 50 means 75% transparent
+		canvas.drawRect( imageX + (currentFrame * destRect.width())
+						,imageY
+						,imageX + (currentFrame * destRect.width()) + destRect.width()
+						,imageY + destRect.height()
+						,paint );
 	}
 
 	private int getY() {
