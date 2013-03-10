@@ -2,6 +2,7 @@ package co.joyatwork.droidz;
 
 import co.joyatwork.droidz.model.Droid;
 import co.joyatwork.droidz.model.ElaineAnimated;
+import co.joyatwork.droidz.model.Explosion;
 import co.joyatwork.droidz.model.components.Speed;
 import android.app.Activity;
 import android.content.Context;
@@ -17,10 +18,19 @@ import android.view.SurfaceView;
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 	private static final String TAG = MainGamePanel.class.getSimpleName();
-	private static final boolean RUN_DROID = false; //switch between Droid and ElaineAnimated
+	//TODO replace this enum with polymorphism to remove if-else branches
+	public enum Game {
+		DROID,
+		ELAINE,
+		EXPLOSION
+	}
+	private final Game game = Game.EXPLOSION; //TODO move to constructor params
 	private MainThread thread;
 	private Droid droid;
 	private ElaineAnimated elaine;
+	private static final int EXPLOSION_SIZE = 300;
+	//private Explosion[] explosions;
+	private Explosion explosion;
 	
 	// the fps to be displayed
 	private String avgFps;
@@ -33,17 +43,20 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 		// adding the callback (this) to the surface holder to intercept events
 		getHolder().addCallback(this);
 		
-		if (RUN_DROID) {
+		if (game == Game.DROID) {
 			// create droid and load bitmap
 			//droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
 			droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), 50, 50);
 		}
-		else {
+		else if (game == Game.ELAINE) {
 			// create Elaine and load bitmap
 			elaine = new ElaineAnimated(
 					BitmapFactory.decodeResource(getResources(), R.drawable.walk_elaine)
 					, 50, 50	// initial position
 					, 5, 5);	// FPS and number of frames in the animation
+		}
+		else if (game == Game.EXPLOSION) {
+			explosion = null; // will be created on touch event
 		}
 
 		// create the game loop thread
@@ -97,9 +110,32 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (!RUN_DROID)
-			return false;
+		if (game == Game.DROID) {
+			return onTouchEventDroid(event);
+		} else if (game == Game.EXPLOSION) {
+			return onTouchEventExplosion(event);
+		}
 		
+		return false;		
+	}
+
+	/**
+	 * Creates new explosion on touch position if no one is alive.
+	 * @param event
+	 * @return
+	 */
+	private boolean onTouchEventExplosion(MotionEvent event) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			// handle touch
+			// check if explosion is null or if it is already dead
+			if (explosion == null || explosion.isDead()) {
+				explosion = new Explosion(EXPLOSION_SIZE, (int)event.getX(), (int)event.getY());
+			}
+		}
+		return true;
+	}
+
+	private boolean onTouchEventDroid(MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			// delegating event handling to the droid
 			droid.handleActionDown((int) event.getX(), (int) event.getY());
@@ -130,11 +166,11 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 				droid.setTouched(false);
 			}
 		}
-		return true;		
+		return true;
 	}
 
 	public void update() {
-		if (RUN_DROID) {
+		if (game == Game.DROID) {
 			// check collision with right wall if heading right
 			if (droid.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
 					&& droid.getX() + droid.getBitmap().getWidth() / 2 >= getWidth()) {
@@ -158,8 +194,14 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			// Update the lone droid
 			droid.update();
 		}
-		else {
+		else if (game == Game.ELAINE) {
 			elaine.update(System.currentTimeMillis());
+		}
+		else if (game == Game.EXPLOSION) {
+			// update explosions
+			if (explosion != null && explosion.isAlive()) {
+				explosion.update(getHolder().getSurfaceFrame());
+			}
 		}
 	}
 
@@ -169,11 +211,17 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			return;
 		// fills the canvas with black
 		canvas.drawColor(Color.BLACK);
-		if (RUN_DROID) {
+		if (game == Game.DROID) {
 			droid.draw(canvas);
 		}
-		else {
+		else if (game == Game.ELAINE) {
 			elaine.draw(canvas);
+		}
+		else if (game == Game.EXPLOSION) {
+			// render explosions
+			if (explosion != null) {
+				explosion.draw(canvas);
+			}
 		}
 		// display fps
 		displayFps(canvas, avgFps);
