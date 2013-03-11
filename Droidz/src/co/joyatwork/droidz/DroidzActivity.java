@@ -14,12 +14,23 @@ public class DroidzActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		MainGamePanel.Game game;
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+		    String value = extras.getString("game");
+		    Log.d(TAG, "extras " + value);
+		    game = MainGamePanel.Game.valueOf(value);
+		}
+		else {
+			game = MainGamePanel.Game.DROID;
+		}
 		// requesting to turn the title OFF
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// making it full screen
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		// set our MainGamePanel as the View
-		setContentView(new MainGamePanel(this));
+		setContentView(new MainGamePanel(this, game));
 		Log.d(TAG, "onCreate");
     }
 

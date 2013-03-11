@@ -24,7 +24,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 		ELAINE,
 		EXPLOSION
 	}
-	private final Game game = Game.EXPLOSION; //TODO move to constructor params
+	private Game game;
 	private MainThread thread;
 	private Droid droid;
 	private ElaineAnimated elaine;
@@ -38,11 +38,15 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 		this.avgFps = avgFps;
 	}
 
-	public MainGamePanel(Context context) {
+	//TODO refactor to change enum Game to Game class and remove if-else chains 
+	public MainGamePanel(Context context, Game game) {
 		super(context);
 		// adding the callback (this) to the surface holder to intercept events
 		getHolder().addCallback(this);
-		
+
+
+		this.game = game;
+
 		if (game == Game.DROID) {
 			// create droid and load bitmap
 			//droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);

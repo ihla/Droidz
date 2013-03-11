@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Droidz</string>
+    <string name="app_name">Droidz - Game Demos</string>
     <string name="action_settings">Settings</string>
-    <string name="warning">Robots are rising!</string>
-    <string name="hello_world">Hello world, DroidzActivity!</string>
+    <string name="no_demos">No Demos!</string>
+    <string name="flying_droid">Flying Droid</string>
+    <string name="flying_droid_description">Simple animation of flying object with colision detection</string>
+    <string name="walking_elaine">Walking Elaine</string>
+    <string name="walking_elaine_description">Simple sprite animation of walking character</string>
+    <string name="explosion">Explosion</string>
+    <string name="explosion_description">Simulation of explosion with flying particles</string>
 
 </resources>
