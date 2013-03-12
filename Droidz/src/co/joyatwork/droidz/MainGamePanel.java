@@ -199,7 +199,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			droid.update();
 		}
 		else if (game == Game.ELAINE) {
-			elaine.update(System.currentTimeMillis());
+			elaine.update(System.currentTimeMillis(), getWidth());
 		}
 		else if (game == Game.EXPLOSION) {
 			// update explosions

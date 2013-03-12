@@ -1,5 +1,6 @@
 package co.joyatwork.droidz.model;
 
+import co.joyatwork.droidz.model.components.Speed;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -20,6 +21,8 @@ public class ElaineAnimated {
 
 	private int x;				// the X coordinate of the object (top left of the image)
 	private int y;				// the Y coordinate of the object (top left of the image)
+	
+	private final Speed speed;
 
 	/**
 	 * Simple animation of walking Elaine (aka sprite)
@@ -40,19 +43,28 @@ public class ElaineAnimated {
 		sourceRect = new Rect(0, 0, spriteWidth, spriteHeight);
 		framePeriod = 1000 / fps;
 		frameTicker = 0L;
+		//let Elaine walk with speed of the fraction of sprite width along the x-axis only
+		//TODO using Speed class for such simple thing is a non-sense
+		speed = new Speed(spriteWidth/3, 0);
 	}
 	
 	/**
 	 * called periodically from main loop
 	 * @param gameTime is used to calculate sprite frame tick to increment pointer to the frame to be displayed
+	 * @param screenWidth 
 	 */
-	public void update(long gameTime) {
+	public void update(long gameTime, int screenWidth) {
 		if (gameTime > frameTicker + framePeriod) {
 			frameTicker = gameTime;
 			// increment the frame
 			currentFrame++;
 			if (currentFrame >= frameNr) {
 				currentFrame = 0;
+			}
+			//move Elaine along x axis
+			x += speed.getXv();
+			if (x >= screenWidth) {
+				x = 0;
 			}
 		}
 		// define the rectangle to cut out sprite
