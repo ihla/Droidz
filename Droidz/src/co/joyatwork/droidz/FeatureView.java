@@ -8,6 +8,14 @@ import android.widget.TextView;
 
 /**
  * A widget that describes an activity that provides a feature.
+ * The widgets can by dynamically added.
+ * <p>
+ * The widget contains title and description lines.
+ * The layout is in layout/feature.xml.
+ * <p>
+ * The FeatureView extends FrameLayout which pins each child view within its frame.
+ * In constructor inflates its layout by use of LayoutInflater.
+ * LayoutInflater instantiates a layout XML file into its corresponding View objects.
  */
 public final class FeatureView extends FrameLayout {
 
